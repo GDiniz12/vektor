@@ -1,18 +1,27 @@
-import type RouteSettings from "./interfaces/routeSettings.js";
+import Request from "./request.js";
+import Response from "./response.js";
 
 class Router {
-    private routes: RouteSettings[];
+    private path: string;
+    private method: string;
+    private func: (req: Request, res: Response) => void;
 
-    constructor(routes: RouteSettings[]) {
-        this.routes = routes;
+    constructor(path: string, method: string, func: (req: Request, res: Response) => void) {
+        this.path = path,
+        this.method = method,
+        this.func = func;
     }
 
-    getRoutes() {
-        return this.routes;
+    getPath() {
+        return this.path;
     }
 
-    setRoute(route: RouteSettings) {
-        this.routes.push(route);
+    getMethod() {
+        return this.method;
+    }
+
+    getFunc() {
+        return this.func;
     }
 }
 

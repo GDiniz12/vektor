@@ -1,47 +1,42 @@
-import * as http from "http";
 import Response from "./response.js";
-import useServer from "./application.js";
+import {useServer} from "./server.js";
+import { server } from "./server.js";
 import Request from "./request.js";
 import Router from "./router.js";
-import type RouteSettings from "./interfaces/routeSettings.js";
 
 export default function vektor() {
-    const routes = new Router([]);
+    const routers: Router[] = [];
+
+    useServer((req, res) => {
+        if (req.url && req.method) {
+            for (let i = 0; i < routers.length; i++) {
+                const func = routers[i]?.getFunc();
+                const path = routers[i]?.getPath();
+                const method = routers[i]?.getMethod();
+
+                if (path === req.url && method === req.method) {
+                    const request = new Request(req);
+                    const response = new Response(res);
+
+                    if (func !== undefined) {
+                        func(request, response);
+                        return;
+                    }
+                }
+            }
+            // if doesn't have a router, return not found
+            res.writeHead(404);
+            res.end(`There is no ${req.method} for ${req.url}`);
+        }
+    });
 
     return {
         get: (path: string, cb: (req: Request, res: Response) => void) => {
-            useServer((req, res) => {
-                const routeSettings: RouteSettings = {
-                    path: path,
-                    method: "GET"
-                }
-                routes.setRoute(routeSettings);
-
-                const reqGet = new Request(req, routes, path, "GET", req.url, req.method);
-                const resGet = new Response(res);
-
-                //this function checks if the request is valid, but it has an invalid concept. I need to create a solution.
-                if (!reqGet.matchRequest()) {
-                    res.writeHead(404);
-                    res.end(`There is no /GET for ${req.url}`);
-                    return;
-                };
-                
-                if(req.url === path && req.method === "GET") {
-                    cb(reqGet, resGet); 
-                }
-            });
-        },
-        post: (path: string, cb: (req: Request, res: Response) => void) => {
-            useServer((req, res) => {
-                const reqPost = new Request(req, routes, path, "POST", req.url, req.method);
-                const resPost = new Response(res);
-
-                cb(reqPost, resPost);
-            })
+            const router = new Router(path, "GET", cb);
+            routers.push(router);
         },
         run: (port: number, startMessage: string) => {
-            useServer((res) => {}).listen(port, () => console.log(startMessage));
+            server.listen(port, () => console.log(startMessage));
         }
     }
 }
