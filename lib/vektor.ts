@@ -35,6 +35,22 @@ export default function vektor() {
             const router = new Router(path, "GET", cb);
             routers.push(router);
         },
+        post: (path: string, cb: (req: Request, res: Response) => void) => {
+            const router = new Router(path, "POST", cb);
+            routers.push(router);
+        },
+        put: (path: string, cb: (req: Request, res: Response) => void) => {
+            const router = new Router(path, "PUT", cb);
+            routers.push(router);
+        },
+        patch: (path: string, cb: (req: Request, res: Response) => void) => {
+            const router = new Router(path, "PATCH", cb);
+            routers.push(router);
+        },
+        delete: (path: string, cb: (req: Request, res: Response) => void) => {
+            const router = new Router(path, "DELETE", cb);
+            routers.push(router);
+        },
         run: (port: number, startMessage: string) => {
             server.listen(port, () => console.log(startMessage));
         }

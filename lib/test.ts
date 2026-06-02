@@ -17,3 +17,8 @@ app.get("/test", (req, res) => {
     }
     res.sendJson(result, 200);
 });
+
+app.post("/", (req, res) => {
+    const test = {"hm": 52};
+    res.sendJson(test, 201);
+});
