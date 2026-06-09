@@ -11,11 +11,30 @@ export default function vektor() {
         if (req.url && req.method) {
             for (let i = 0; i < routers.length; i++) {
                 const func = routers[i]?.getFunc();
-                const path = routers[i]?.getPath();
+                let path = routers[i]?.getPath();
                 const method = routers[i]?.getMethod();
 
-                if (path === req.url && method === req.method) {
-                    const request = new Request(req);
+                let pathParent: string | undefined;
+                let newReqUrl: any;
+
+                if (path?.includes(":")) {
+                    const regexPath = path.match(/.+(?=:)/); // get everything before ":"
+                   
+                    if (regexPath !== null && regexPath !== undefined) {
+                        pathParent = regexPath[0];
+                    }
+
+                    const regexUrl = req.url.match(/^([\s\S]*)\//); // get everything after the last "/"
+
+                    if (regexUrl !== null && regexUrl !== undefined) {
+                        newReqUrl = regexUrl[1] + "/";
+                    }
+                }
+
+                console.log(newReqUrl);
+                console.log(pathParent)
+                if (path === req.url || pathParent === newReqUrl && pathParent !== undefined && newReqUrl !== undefined && method === req.method) {
+                    const request = new Request(req, path);
                     const response = new Response(res);
 
                     if (func !== undefined) {

@@ -10,15 +10,3 @@ app.get("/", (req, res) => {
     }
     res.sendJson(result, 200);
 });
-
-app.get("/test", (req, res) => {
-    const result = {
-        "everybody": "boaaa"
-    }
-    res.sendJson(result, 200);
-});
-
-app.post("/", (req, res) => {
-    const test = {"hm": 52};
-    res.sendJson(test, 201);
-});
